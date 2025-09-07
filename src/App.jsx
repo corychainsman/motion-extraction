@@ -139,15 +139,14 @@ function App() {
                 onDurationChange={handleDurationChange}
                 onPlayStateChange={setIsPlaying}
               />
-              {showOverlay && (
-                <SimpleYouTubeOverlay 
-                  ref={overlayRef}
-                  videoId={getVideoId(videoSrc)}
-                  isPlaying={isPlaying}
-                  mainVideoTime={mainVideoTime}
-                  offset={offset}
-                />
-              )}
+              <SimpleYouTubeOverlay 
+                ref={overlayRef}
+                videoId={getVideoId(videoSrc)}
+                isPlaying={isPlaying}
+                mainVideoTime={mainVideoTime}
+                offset={offset}
+                style={{ display: showOverlay ? 'block' : 'none' }}
+              />
             </ErrorBoundary>
           )}
           
@@ -162,17 +161,16 @@ function App() {
                 onTimeUpdate={handleMainVideoTimeUpdate}
                 onDurationChange={handleDurationChange}
               />
-              {showOverlay && (
-                <VideoOverlay 
-                  ref={overlayRef}
-                  videoSrc={videoSrc}
-                  videoType={videoType}
-                  offset={offset}
-                  isPlaying={isPlaying}
-                  setIsPlaying={setIsPlaying}
-                  mainVideoTime={mainVideoTime}
-                />
-              )}
+              <VideoOverlay 
+                ref={overlayRef}
+                videoSrc={videoSrc}
+                videoType={videoType}
+                offset={offset}
+                isPlaying={isPlaying}
+                setIsPlaying={setIsPlaying}
+                mainVideoTime={mainVideoTime}
+                style={{ display: showOverlay ? 'block' : 'none' }}
+              />fix
             </>
           )}
           

@@ -1,6 +1,6 @@
 import { forwardRef, useEffect } from 'react'
 
-const VideoOverlay = forwardRef(({ videoSrc, videoType, offset, isPlaying, setIsPlaying, mainVideoTime }, ref) => {
+const VideoOverlay = forwardRef(({ videoSrc, videoType, offset, isPlaying, setIsPlaying, mainVideoTime, style }, ref) => {
   useEffect(() => {
     if (ref.current) {
       if (isPlaying) {
@@ -45,7 +45,7 @@ const VideoOverlay = forwardRef(({ videoSrc, videoType, offset, isPlaying, setIs
       ref={ref}
       src={videoSrc}
       className="absolute inset-0 w-full h-full object-cover"
-      style={{ filter: 'invert(1)', opacity: 0.5, pointerEvents: "none"}}
+      style={{ filter: 'invert(1)', opacity: 0.5, pointerEvents: "none", ...style }}
       data-overlay="true"
       onTimeUpdate={handleTimeUpdate}
       onLoadedMetadata={handleLoadedMetadata}

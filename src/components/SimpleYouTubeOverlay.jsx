@@ -1,6 +1,6 @@
 import { forwardRef, useImperativeHandle, useState, useRef, useEffect } from 'react'
 
-const SimpleYouTubeOverlay = forwardRef(({ videoId, isPlaying, mainVideoTime, offset }, ref) => {
+const SimpleYouTubeOverlay = forwardRef(({ videoId, isPlaying, mainVideoTime, offset, style }, ref) => {
   const [shouldAutoplay, setShouldAutoplay] = useState(1)
   const iframeRef = useRef(null)
 
@@ -48,7 +48,7 @@ const SimpleYouTubeOverlay = forwardRef(({ videoId, isPlaying, mainVideoTime, of
   const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=${shouldAutoplay}&controls=0&mute=1&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&start=${startTime}`
 
   return (
-    <div className="absolute inset-0 w-full h-full z-20" style={{ filter: 'invert(1)', opacity: 0.5, pointerEvents: "none"  }}>
+    <div className="absolute inset-0 w-full h-full z-20" style={{ filter: 'invert(1)', opacity: 0.5, pointerEvents: "none", ...style }}>
       <iframe
         ref={iframeRef}
         src={embedUrl}
