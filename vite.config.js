@@ -10,6 +10,16 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: './index.html'
+      },
+      output: {
+        entryFileNames: 'script.js',
+        chunkFileNames: 'script.js',
+        assetFileNames: (assetInfo) => {
+          if (assetInfo.name && assetInfo.name.endsWith('.css')) {
+            return 'style.css'
+          }
+          return 'assets/[name]-[hash][extname]'
+        }
       }
     }
   }

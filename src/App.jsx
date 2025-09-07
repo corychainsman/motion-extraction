@@ -10,7 +10,7 @@ import PlaybackControls from './components/PlaybackControls'
 import ErrorBoundary from './components/ErrorBoundary'
 
 function App() {
-  const [videoSrc, setVideoSrc] = useState('https://www.youtube.com/watch?v=ipf7ifVSeDU?t=100')
+  const [videoSrc, setVideoSrc] = useState('https://www.youtube.com/watch?v=ipf7ifVSeDU&t=100s')
   const [isPlaying, setIsPlaying] = useState(false)
   const [offset, setOffset] = useState(1)
   const [videoType, setVideoType] = useState('youtube') // 'youtube' or 'local'
@@ -71,6 +71,22 @@ function App() {
     // Handle both watch and embed URLs
     let match = url.match(/(?:youtube\.com\/watch\?v=|youtube\.com\/embed\/|youtu\.be\/)([^&\n?#]+)/)
     return match ? match[1] : null
+  }
+
+  const getStartTime = (url) => {
+    if (!url) return 0
+    
+    // Extract start time from URL parameters
+    const urlObj = new URL(url)
+    const startParam = urlObj.searchParams.get('t')
+    
+    if (startParam) {
+      // Handle both '100s' and '100' formats
+      const seconds = startParam.replace('s', '')
+      return parseInt(seconds) || 0
+    }
+    
+    return 0
   }
 
   return (
@@ -134,6 +150,7 @@ function App() {
               <SimpleYouTubePlayer 
                 ref={videoRef}
                 videoId={getVideoId(videoSrc)}
+                startTime={getStartTime(videoSrc)}
                 isPlaying={isPlaying}
                 onTimeUpdate={handleMainVideoTimeUpdate}
                 onDurationChange={handleDurationChange}

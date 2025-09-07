@@ -1,9 +1,9 @@
 import { forwardRef, useImperativeHandle, useState, useRef, useEffect } from 'react'
 
-const SimpleYouTubePlayer = forwardRef(({ videoId, isPlaying, onTimeUpdate, onDurationChange, onPlayStateChange }, ref) => {
+const SimpleYouTubePlayer = forwardRef(({ videoId, startTime = 0, isPlaying, onTimeUpdate, onDurationChange, onPlayStateChange }, ref) => {
   const [shouldAutoplay, setShouldAutoplay] = useState(1)
   const [currentTime, setCurrentTime] = useState(0)
-  const [startTime, setStartTime] = useState(0)
+  const [currentStartTime, setCurrentStartTime] = useState(startTime)
   const [playStarted, setPlayStarted] = useState(null)
   const [ytPlayer, setYtPlayer] = useState(null)
   const iframeRef = useRef(null)
@@ -20,7 +20,7 @@ const SimpleYouTubePlayer = forwardRef(({ videoId, isPlaying, onTimeUpdate, onDu
     },
     getCurrentTime: () => currentTime,
     seekTo: (time) => {
-      setStartTime(time)
+      setCurrentStartTime(time)
       setCurrentTime(time)
       setPlayStarted(shouldAutoplay ? Date.now() : null)
       
@@ -37,14 +37,14 @@ const SimpleYouTubePlayer = forwardRef(({ videoId, isPlaying, onTimeUpdate, onDu
     if (shouldAutoplay && playStarted && onTimeUpdate) {
       const interval = setInterval(() => {
         const elapsed = (Date.now() - playStarted) / 1000
-        const newTime = startTime + elapsed
+        const newTime = currentStartTime + elapsed
         setCurrentTime(newTime)
         onTimeUpdate(newTime)
       }, 100)
       
       return () => clearInterval(interval)
     }
-  }, [shouldAutoplay, playStarted, startTime, onTimeUpdate])
+  }, [shouldAutoplay, playStarted, currentStartTime, onTimeUpdate])
 
   // Create YouTube Player API instance to get exact duration
   useEffect(() => {
@@ -144,13 +144,19 @@ const SimpleYouTubePlayer = forwardRef(({ videoId, isPlaying, onTimeUpdate, onDu
     }
   }, [videoId, shouldAutoplay, playStarted, onPlayStateChange])
 
+  // Initialize start time when component mounts
+  useEffect(() => {
+    setCurrentStartTime(startTime)
+    setCurrentTime(startTime)
+  }, [startTime])
+
   useEffect(() => {
     // Update iframe src when play state changes
     if (iframeRef.current && videoId) {
-      const newUrl = `https://www.youtube.com/embed/${videoId}?autoplay=${shouldAutoplay}&controls=1&mute=1&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&start=${Math.floor(startTime)}`
+      const newUrl = `https://www.youtube.com/embed/${videoId}?autoplay=${shouldAutoplay}&controls=1&mute=1&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&start=${Math.floor(currentStartTime)}`
       iframeRef.current.src = newUrl
     }
-  }, [shouldAutoplay, videoId, startTime])
+  }, [shouldAutoplay, videoId, currentStartTime])
 
   if (!videoId) {
     return (
@@ -160,7 +166,7 @@ const SimpleYouTubePlayer = forwardRef(({ videoId, isPlaying, onTimeUpdate, onDu
     )
   }
 
-  const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=${shouldAutoplay}&controls=1&mute=1&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3`
+  const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=${shouldAutoplay}&controls=1&mute=1&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&start=${Math.floor(currentStartTime)}`
 
   return (
     <div className="w-full h-full relative z-10" style={{ pointerEvents: "none" }}>
