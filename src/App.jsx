@@ -67,7 +67,9 @@ function App() {
 
   const getVideoId = (url) => {
     if (!url) return null
-    const match = url.match(/(?:youtube\.com\/embed\/)([^&\n?#]+)/)
+    
+    // Handle both watch and embed URLs
+    let match = url.match(/(?:youtube\.com\/watch\?v=|youtube\.com\/embed\/|youtu\.be\/)([^&\n?#]+)/)
     return match ? match[1] : null
   }
 

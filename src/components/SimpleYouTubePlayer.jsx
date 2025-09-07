@@ -48,26 +48,34 @@ const SimpleYouTubePlayer = forwardRef(({ videoId, isPlaying, onTimeUpdate, onDu
 
   // Create YouTube Player API instance to get exact duration
   useEffect(() => {
-    if (videoId && playerContainerRef.current) {
-      // Clean up any existing player first
-      if (ytPlayer) {
-        try {
-          ytPlayer.destroy()
-        } catch (error) {
-          // Ignore cleanup errors
-        }
-        setYtPlayer(null)
+    if (!videoId) return
+    
+    console.log('Attempting to get duration for video:', videoId)
+    
+    // Clean up any existing player first
+    if (ytPlayer) {
+      try {
+        ytPlayer.destroy()
+      } catch (error) {
+        console.log('Cleanup error:', error)
       }
+      setYtPlayer(null)
+    }
 
-      // Wait for YouTube API to be available
-      const initializePlayer = () => {
-        if (window.YT && window.YT.Player) {
-          // Generate unique container ID
-          const containerId = `yt-player-${videoId}-${Date.now()}`
-          
-          // Create a hidden div for the YouTube Player API
-          playerContainerRef.current.innerHTML = `<div id="${containerId}"></div>`
-          
+    // Function to initialize YouTube player
+    const initializePlayer = () => {
+      console.log('Checking if YouTube API is ready...', !!window.YT, !!window.YT?.Player)
+      
+      if (window.YT && window.YT.Player && playerContainerRef.current) {
+        console.log('YouTube API ready, creating player...')
+        
+        // Generate unique container ID
+        const containerId = `yt-duration-player-${Date.now()}`
+        
+        // Create container div
+        playerContainerRef.current.innerHTML = `<div id="${containerId}"></div>`
+        
+        try {
           const player = new window.YT.Player(containerId, {
             height: '1',
             width: '1',
@@ -77,32 +85,41 @@ const SimpleYouTubePlayer = forwardRef(({ videoId, isPlaying, onTimeUpdate, onDu
               controls: 0,
               mute: 1,
               enablejsapi: 1,
+              origin: window.location.origin
             },
             events: {
               onReady: (event) => {
-                // Get the exact duration from the loaded video
+                console.log('YouTube Player ready, getting duration...')
                 const duration = event.target.getDuration()
-                console.log(`Got exact duration for ${videoId}:`, duration, 'seconds')
+                console.log(`Exact duration for ${videoId}: ${duration} seconds (${Math.floor(duration/3600)}:${Math.floor((duration%3600)/60).toString().padStart(2,'0')}:${Math.floor(duration%60).toString().padStart(2,'0')})`)
+                
                 if (duration && duration > 0 && onDurationChange) {
                   onDurationChange(duration)
+                  setYtPlayer(event.target)
+                } else {
+                  console.warn('Got invalid duration:', duration)
                 }
-                setYtPlayer(event.target)
               },
               onError: (event) => {
-                console.warn('YouTube Player API error:', event.data)
-                // Don't set any fallback duration on error - let user know there's an issue
+                console.error('YouTube Player error:', event.data)
+              },
+              onStateChange: (event) => {
+                console.log('YouTube Player state change:', event.data)
               }
-            },
+            }
           })
-        } else {
-          // YouTube API not ready yet, wait and try again
-          setTimeout(initializePlayer, 100)
+        } catch (error) {
+          console.error('Error creating YouTube player:', error)
         }
+      } else {
+        console.log('YouTube API not ready, retrying in 200ms...')
+        setTimeout(initializePlayer, 200)
       }
-
-      initializePlayer()
     }
-  }, [videoId, onDurationChange, ytPlayer])
+
+    // Start initialization
+    initializePlayer()
+  }, [videoId]) // Only depend on videoId, not onDurationChange
 
   // Clean up YouTube Player API instance
   useEffect(() => {
