@@ -6,7 +6,7 @@ const OffsetSlider = ({ offset, setOffset }) => {
   return (
     <div className="flex items-center gap-2">
       <label className="text-sm font-medium text-gray-700 whitespace-nowrap">
-        Offset:
+        Time Offset:
       </label>
       <input
         type="range"
@@ -17,9 +17,9 @@ const OffsetSlider = ({ offset, setOffset }) => {
         onChange={handleChange}
         className="w-32 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
       />
-      <span className="text-sm text-gray-600 min-w-[2rem]">
+      {/* <span className="text-sm text-gray-600 min-w-[2rem]">
         {offset.toFixed(1)}s
-      </span>
+      </span> */}
     </div>
   )
 }
