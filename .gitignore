@@ -11,10 +11,10 @@ node_modules
 dist-ssr
 *.local
 
-# Build artifacts (but keep index.html)
-assets/
-*.css
-*.js
+# Build artifacts (but keep index.html and built assets)
+!assets/
+!*.css
+!*.js
 !index.html
 
 # Editor directories and files
