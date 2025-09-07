@@ -11,6 +11,12 @@ node_modules
 dist-ssr
 *.local
 
+# Build artifacts (but keep index.html)
+assets/
+*.css
+*.js
+!index.html
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
