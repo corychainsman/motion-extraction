@@ -151,6 +151,7 @@ function App() {
                 ref={videoRef}
                 videoId={getVideoId(videoSrc)}
                 startTime={getStartTime(videoSrc)}
+                videoUrl={videoSrc}
                 isPlaying={isPlaying}
                 onTimeUpdate={handleMainVideoTimeUpdate}
                 onDurationChange={handleDurationChange}
@@ -162,6 +163,7 @@ function App() {
                 isPlaying={isPlaying}
                 mainVideoTime={mainVideoTime}
                 offset={offset}
+                videoUrl={videoSrc}
                 style={{ display: showOverlay ? 'block' : 'none' }}
               />
             </ErrorBoundary>

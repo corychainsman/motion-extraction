@@ -9,11 +9,11 @@ const Controls = ({ videoSrc, setVideoSrc, videoType, setVideoType }) => {
       // Check if it's a YouTube URL
       const youtubeRegex = /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/
       const match = url.match(youtubeRegex)
-      const urlParams = "autoplay=0&controls=0&disablekb=1&fs=0&cc_load_policy=0&iv_load_policy=3&modestbranding=1&rel=0&showinfo=0&mute=1"
       
       if (match) {
         setVideoType('youtube')
-        setVideoSrc(`https://www.youtube.com/embed/${match[1]}?${urlParams}`)
+        // Preserve the original URL with t parameter for the components to extract
+        setVideoSrc(url)
       } else {
         setVideoType('url')
         setVideoSrc(url)

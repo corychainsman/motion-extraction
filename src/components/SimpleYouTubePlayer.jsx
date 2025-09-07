@@ -1,6 +1,6 @@
 import { forwardRef, useImperativeHandle, useState, useRef, useEffect } from 'react'
 
-const SimpleYouTubePlayer = forwardRef(({ videoId, startTime = 0, isPlaying, onTimeUpdate, onDurationChange, onPlayStateChange }, ref) => {
+const SimpleYouTubePlayer = forwardRef(({ videoId, startTime = 0, videoUrl, isPlaying, onTimeUpdate, onDurationChange, onPlayStateChange }, ref) => {
   const [shouldAutoplay, setShouldAutoplay] = useState(1)
   const [currentTime, setCurrentTime] = useState(0)
   const [currentStartTime, setCurrentStartTime] = useState(startTime)
@@ -8,6 +8,16 @@ const SimpleYouTubePlayer = forwardRef(({ videoId, startTime = 0, isPlaying, onT
   const [ytPlayer, setYtPlayer] = useState(null)
   const iframeRef = useRef(null)
   const playerContainerRef = useRef(null)
+
+  // Extract start time from URL parameters
+  const getStartTimeFromUrl = (url) => {
+    if (!url) return 0
+    const match = url.match(/[?&]t=(\d+)s?/)
+    if (match) {
+      return parseInt(match[1]) || 0
+    }
+    return 0
+  }
 
   useImperativeHandle(ref, () => ({
     play: () => {
@@ -144,11 +154,13 @@ const SimpleYouTubePlayer = forwardRef(({ videoId, startTime = 0, isPlaying, onT
     }
   }, [videoId, shouldAutoplay, playStarted, onPlayStateChange])
 
-  // Initialize start time when component mounts
+  // Initialize start time when component mounts or videoUrl changes
   useEffect(() => {
-    setCurrentStartTime(startTime)
-    setCurrentTime(startTime)
-  }, [startTime])
+    const urlStartTime = getStartTimeFromUrl(videoUrl)
+    const finalStartTime = Math.max(startTime, urlStartTime)
+    setCurrentStartTime(finalStartTime)
+    setCurrentTime(finalStartTime)
+  }, [startTime, videoUrl])
 
   useEffect(() => {
     // Update iframe src when play state changes
